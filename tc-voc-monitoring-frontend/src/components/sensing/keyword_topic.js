@@ -1,13 +1,16 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-
+import { fetchExcelData } from '../../actions';
+import * as FileSaver from 'file-saver';
+import * as XLSX from 'xlsx';
 /* 
 TODO 
 
 1. redux로 데이터 받는 구조로 바꾸기 V
-2. 엑셀 다운로드 
-3. 특정 유형 클릭하면, 해당 유형 키워드/토픽 나오도록 처리 -> Classification
+2. 엑셀 다운로드 V
+3. 특정 유형 클릭하면, 해당 유형 키워드/토픽 나오도록 처리 -> Classification (조금 나중에! Page2하고 나서)
 */
+
 class KeywordTopic extends Component {
     constructor(props) {
         super(props);
@@ -25,11 +28,11 @@ class KeywordTopic extends Component {
     renderKeywordListItem(){
         const KeywordItems = this.props.totalKeyword.map( (keyword, index) => {
             return (
-                <div>
-                    <div className="boxitem" key={keyword.keyword} onClick={this.onClickTotalKeyword.bind(this, index)}>
+                <div key={keyword.keyword} >
+                    <div className="boxitem" onClick={this.onClickTotalKeyword.bind(this, index)}>
                         <span id="number">{index +1}위</span>
                         <span id="text">{keyword.keyword}</span>
-                        <button onClick={this.onClickKeywordExcelButton}>Excel</button>
+                        <button onClick={this.onClickKeywordExcelButton.bind(this, keyword.keyword)}>Excel</button>
                     </div> 
                     {this.renderVocItem(keyword.voclist, index)}
                 </div>
@@ -67,8 +70,8 @@ class KeywordTopic extends Component {
     renderTopicListItem(){
         const KeywordItems = this.props.totalTopic.map( (topic, index) => {
             return (
-                <div>
-                    <div className="boxitem" key={topic.topic} onClick={this.onClickTotalTopic.bind(this, index)}>
+                <div key={topic.topic}>
+                    <div className="boxitem" onClick={this.onClickTotalTopic.bind(this, index)}>
                         <span id="number">#{index +1}</span>
                         <span id="text">{topic.topic}</span>
                         <button>Excel</button>
@@ -104,9 +107,41 @@ class KeywordTopic extends Component {
 
         this.setState({showTotalTopicDetail: temp});
     }
+  
+      
+    onClickKeywordExcelButton(keyword){
+        var rightNow = new Date();
+        var res = rightNow.toISOString().slice(0,10).replace(/-/g,"");
 
-    onClickKeywordExcelButton(){
-        console.log("Clicked!");
+        this.props.fetchExcelData('keyword', keyword, res, (data)=> { // type, keyword, dt
+            //******* 데이터 받아와서 수행할 작업들 적기 *******//
+
+            // 해당 키워드의 전체 데이터 요청 (axios)
+            // https://kimtaekju-study.tistory.com/301
+            // https://soonh.tistory.com/38
+            // https://blog.bitsrc.io/exporting-data-to-excel-with-react-6943d7775a92
+
+            // 이거 어쩌면 타이밍 안맞을수도 있는데, 잘 맞춰서 테스트해봐야 함. this.props.excelData 이거 자체가 필요 없을수도 있음 !!
+            // 그냥 여기서 axios를 치는거지
+
+            // 받아온 데이터로 엑셀 다운로드
+            const fileType = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8';
+            const fileExtension = '.xlsx';
+            const csvData = this.props.excelData.voclist;
+            const fileName = 'test';
+
+            const exportToCSV = (csvData, fileName) => { // 우왕 잘된다 ^0^
+                const ws = XLSX.utils.json_to_sheet(csvData);
+                const wb = { Sheets: { 'data': ws }, SheetNames: ['data'] };
+                const excelBuffer = XLSX.write(wb, { bookType: 'xlsx', type: 'array' });
+                const data = new Blob([excelBuffer], {type: fileType});
+                FileSaver.saveAs(data, fileName + fileExtension);
+            }
+
+            exportToCSV(csvData,fileName);
+        }); 
+
+      
     }
 
     render() {
@@ -141,7 +176,7 @@ class KeywordTopic extends Component {
 
 
 function mapStateToProps(state) { 
-    return { totalKeyword : state.totalKeyword, totalTopic: state.totalTopic };  
+    return { totalKeyword : state.totalKeyword, totalTopic: state.totalTopic, excelData: state.excelData };  
 }
 
-export default connect(mapStateToProps) (KeywordTopic);
+export default connect(mapStateToProps, { fetchExcelData }) (KeywordTopic);

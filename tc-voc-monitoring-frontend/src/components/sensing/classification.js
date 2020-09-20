@@ -1,21 +1,31 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { fetchClass2, fetchClass3 } from '../../actions';
-
+import { fetchClass2, fetchClass3, fetchSelectedClass2 } from '../../actions';
 import { BarChart, Bar, XAxis, Tooltip, ResponsiveContainer } from 'recharts';
+
+import {withRouter} from 'react-router-dom';
+
 
 class Classification extends Component {
     constructor(props) {
         super(props);
         this.state = { term: '' };
 
+        // this.onDoubleClickClass2Chart = this.onDoubleClickClass2Chart.bind(this);
         // this.onInputChange = this.onInputChange.bind(this);  // 함수 안에서 this가 뭔지 알 수 있도록 꼭 넘겨줘야 함!
+        this.renderClass2Chart = this.renderClass2Chart.bind(this);
     }
 
     componentDidMount(){
         // console.log(this.props.class3);
         this.props.fetchClass2();
         this.props.fetchClass3();
+    }
+
+    onDoubleClickClass2Chart(name){
+        this.props.fetchSelectedClass2(name, (value) => {
+            this.props.history.push(`/analysis/${name}`);
+        });
     }
     
     renderClass2Chart(data) { // data is object
@@ -30,7 +40,7 @@ class Classification extends Component {
         // const data = [ {name: 'HDVoice', past: 1000, now: 2900 }];
 
         return(
-            <div className="Class2Chart" style={style}>
+            <div className="Class2Chart" style={style} onDoubleClick={this.onDoubleClickClass2Chart.bind(this, dataArray[0].name)}>
                 {/* <div style={style2}></div>
                 <div style={style3}></div>
                 <span style={textStyle}>HDVoice품질</span>
@@ -112,4 +122,7 @@ function mapStateToProps(state) {
     return { class2 : state.class2, class3: state.class3 }; // { weather } === { weather: weather } 
 }
 
-export default connect(mapStateToProps, { fetchClass2, fetchClass3 }) (Classification);
+
+export default withRouter(
+    connect(mapStateToProps, { fetchClass2, fetchClass3, fetchSelectedClass2 }) (Classification)
+);

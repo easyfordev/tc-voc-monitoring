@@ -17,17 +17,4 @@ export default function(state=null, action) {
 }
 
 // API ver.
-// export default function(state=null, action) {
-//     return [
-//         {name: 'HDVoice품질', past: 1000, now: 2900 },
-//         {name: '음성품질', past: 1000, now: 2900 },
-//         {name: '데이터품질', past: 1000, now: 2900 },
-//         {name: '기타안내', past: 1000, now: 2900 },
-//         {name: '단말/설정', past: 1000, now: 2900 },
-//         {name: 'Application', past: 1000, now: 2900 },
-//         {name: '영상품질', past: 1000, now: 2900 },
-//         {name: '부가서비스오류', past: 1000, now: 2900 },
-//         {name: '제도/프로세스', past: 1000, now: 2900 },
-//         {name: 'WIFI품질', past: 1000, now: 2900 }
-//     ];
-// }
+

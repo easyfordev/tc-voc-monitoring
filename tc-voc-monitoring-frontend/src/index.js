@@ -5,12 +5,13 @@ import * as serviceWorker from './serviceWorker';
 import reducers from './reducers';
 import './style/index.css';
 import './style/sensing.css';
+import './style/analysis.css';
+// import 'bootstrap/dist/css/bootstrap.css'
 
 import { Provider } from 'react-redux';
 import { createStore, applyMiddleware } from 'redux';
 import { BrowserRouter, Route, Switch } from 'react-router-dom';
 
-import Header from './components/header';
 import Sensing from './components/sensing/sensing';
 import Analysis from './components/anlysis/analysis';
 
@@ -20,9 +21,8 @@ ReactDOM.render(
   <Provider store={createStoreWithMiddleware(reducers)}>
     <BrowserRouter>
       <div>
-        <Header></Header>
         <Switch>
-          <Route path="/analysis" component={Analysis} />
+          <Route path="/analysis/:class2" component={Analysis} />
           <Route path="/" component={Sensing}/>
         </Switch>
       </div>

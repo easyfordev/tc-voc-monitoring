@@ -6,15 +6,21 @@ import { fetchPeriod } from '../../actions/index'; // 호출할 특정 ActionCre
 import Classification from './classification';
 import KeywordTopic from './keyword_topic';
 
+import Header from '../header';
+
 class Sensing extends Component {
     constructor(props) {
         super(props);
         
         this.state = {
-            radioGroup: { one: false, two: false, three: true, four: false }
+            radioGroup: { one: false, two: false, three: false, four: true }
         };
 
         this.handleRadio = this.handleRadio.bind(this);
+    }
+
+    componentDidMount(){
+        this.props.fetchPeriod("1d");
     }
 
     onSubmit(values) {
@@ -37,28 +43,31 @@ class Sensing extends Component {
 
         return (
             <div className="Sensing">
-                <form className="Filter" onSubmit={handleSubmit(this.onSubmit.bind(this))}>
-                    <span>
-                        <label>조회 기간</label>
-                        <label>
-                            <Field name="period" component="input" type="radio" value="30m" checked={this.state.radioGroup['one']} onChange={this.handleRadio}/>{' '}
-                            30분
-                        </label>
-                        <label>
-                            <Field name="period" component="input" type="radio" value="1h" checked={this.state.radioGroup['two']} onChange={this.handleRadio}/>{' '}
-                            1시간
-                        </label>
-                        <label>
-                            <Field name="period" component="input" type="radio" value="3h" checked={this.state.radioGroup['three']} onChange={this.handleRadio}/>{' '}
-                            3시간(Default)
-                        </label>
-                        <label>
-                            <Field name="period" component="input" type="radio" value="1d" checked={this.state.radioGroup['four']} onChange={this.handleRadio}/>{' '}
-                            1일
-                        </label>
-                    </span>
-                    <button type="submit">OK</button>
-                </form>
+                <Header></Header>
+                <div className="filter">
+                    <form onSubmit={handleSubmit(this.onSubmit.bind(this))}>
+                        <span className="type-filter">
+                                <label className="filter-title">조회 타입</label>
+                                <label>
+                                    <Field name="period" component="input" type="radio" value="30m" checked={this.state.radioGroup['one']} onChange={this.handleRadio}/>{' '}
+                                    30분
+                                </label>
+                                <label>
+                                    <Field name="period" component="input" type="radio" value="1h" checked={this.state.radioGroup['two']} onChange={this.handleRadio}/>{' '}
+                                    1시간
+                                </label>
+                                <label>
+                                    <Field name="period" component="input" type="radio" value="3h" checked={this.state.radioGroup['three']} onChange={this.handleRadio}/>{' '}
+                                    3시간
+                                </label>
+                                <label>
+                                    <Field name="period" component="input" type="radio" value="1d" checked={this.state.radioGroup['four']} onChange={this.handleRadio}/>{' '}
+                                    1일(Default)
+                                </label>
+                            </span>
+                            <button class="submit-button" type="submit">OK</button>
+                    </form>
+                </div>
                 <Classification />
                 <KeywordTopic />
             </div>
